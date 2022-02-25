@@ -1,18 +1,48 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
-  </div>
+  <el-container style="height: 100vh; border: 1px solid #eee">
+    <el-header height="10vh"><Search></Search>
+    </el-header>
+    <el-container>
+
+      <AsidePart></AsidePart>
+      <el-main><Main></Main></el-main>
+    </el-container>
+  </el-container>
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
-
+import Search from '@/components/search.vue'
+import AsidePart from "@/components/AsidePart";
+import Main from "@/components/main";
 export default {
-  name: 'Home',
-  components: {
-    HelloWorld
+  name: "Home",
+  components:{
+    Search,
+    AsidePart,
+    Main
+
+  },
+  data() {
+    const item = {
+      date: '2016-05-02',
+      name: '王小虎',
+      address: '上海市普陀区金沙江路 1518 弄'
+    };
+    return {
+      tableData: Array(20).fill(item)
+    }
   }
 }
 </script>
+
+<style scoped>
+el-header {
+  background-color: #B3C0D1;
+  color: #333;
+  line-height: 60px;
+}
+
+/*el-aside {
+  color: #333;
+}*/
+</style>
