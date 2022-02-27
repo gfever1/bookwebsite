@@ -93,26 +93,28 @@ export default {
 							pwd: this.pwd,
 						
 					})
-						.then(function(res) {
-              console.log(res.data);
-              console.log(res.data.email);
-							if (res.data.success==true) {
-
-								alert("Login successfully");
+						.then(res=> {
+              if (res.data.success == true) {
+                console.log(res.data)
+                alert("Login successfully");
                 //将mail跟token传入sessionStorage
-                sessionStorage.setItem('email',res.data.email)
-               // sessionStorage.setItem('userToken',res.data.token)
+                sessionStorage.setItem('email', res.data.result.email)
+                console.log(sessionStorage.getItem('email'))
+                // sessionStorage.setItem('userToken',res.data.token)
                 //将mail跟token放入vuex
-             //   this.$store.dispatch('setUser',res.data.email)
-             //  this.$store.dispatch('setToken',res.data.token)
+                this.$store.dispatch('setUser', res.data.result.email)
+                //  this.$store.dispatch('setToken',res.data.token)
 
-								that.$router.replace("/Home");
+                that.$router.replace("/Home");
 
 
-							}else if(res.data.success==false){
-								alert("Fail to log in");
-							}
-						})
+              } else if (res.data.success == false) {
+                console.log(res.data)
+                alert("Fail to log in");
+                alert(res.data.message)
+              }
+            })
+
 						.catch(function(error) {
               alert(error.message)
 							console.log(error.message);

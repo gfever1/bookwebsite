@@ -16,5 +16,8 @@ new Vue({
   router,
   axios,
   store,
-  render: h => h(App)
+  render: h => h(App),
+  beforeCreate() {
+    Vue.prototype.$bus = this
+  }
 }).$mount('#app')

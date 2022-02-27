@@ -131,12 +131,12 @@ export default {
 			else if(this.pwd!==this.Rigpwd){
 				this.msg='天皇陛下 龟野先生 我的密码 第二次错咯'
         alert(this.msg);
-			}else{
+			}
       //  this.$router.push('/Login')
 				const that = this
 
         // eslint-disable-next-line no-mixed-spaces-and-tabs
-			    this.$axios.post("/api/login/"+this.tleNum+'/'+this.email+'/'+this.pwd, {
+			    this.$axios.post("/api/register/"+this.tleNum+'/'+this.email+'/'+this.pwd, {
 
               tleNum: this.tleNum,
               email: this.email,
@@ -146,9 +146,9 @@ export default {
 						.then(function(dat) {
               console.log(dat.data)
 							if (dat.data.success==true) {
-								console.log(dat.data);
+
 								alert("Registered successfully");
-								that.$router.replace("/Login");
+							//	that.$router.replace("/Login");
 							}else if(dat.data.success==false){
 								alert("Fail to Register");
 							}
@@ -161,7 +161,7 @@ export default {
 			}
 			
 		}
-    }
+    
 }
 </script>
 

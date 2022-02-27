@@ -4,7 +4,7 @@
     <el-col :span="8"> <img src="https://rcode.zongheng.com/v2018/images/logo.png" width="167px" height="32px" style="margin-left: 30px">
     </el-col>
     <el-col :span="6" >
-      <input type="text" name="keyword" class="searchForm_input searchForm_input2" placeholder="输入书名•作者" v-model="title">
+      <input type="text" name="keyword" class="" placeholder="请输入你想搜索的书名" v-model="title">
     </el-col>
     <el-col :span="4" :push="1">
       <input type="submit" class="searchForm_btn" value="" @click="search" >
@@ -21,14 +21,14 @@
       <el-dropdown >
         <span class="el-dropdown-link" style="color: #d32f2f">
           <i class="el-icon-user-solid" style="margin-right: 7px;font-size: 25px"></i>
-          <span style="font-size: 18px">{{mail}}</span>
+          <span style="font-size: 18px">{{email}}</span>
 
         </span>
 
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item>用户信息</el-dropdown-item>
           <el-dropdown-item>我的书架</el-dropdown-item>
-          <el-dropdown-item @click="exit">退出登录</el-dropdown-item>
+          <el-dropdown-item @click.native="exit">退出登录</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
 
@@ -45,12 +45,29 @@
   export default {
     data() {
       return {
-        title: null,
+        title: '',
+        email: '',
+
       }
     },
     methods: {  
-      search() {  
-        this.$router.push({ name: 'search', query: { title: this.title }})
+      search() {
+       /* console.log(dat.data.items)
+        this.$bus.$emit('getBookList',dat.data.items)*/
+
+        //js模板字符串，可以带参数
+        this.$axios.get(`https://api.github.com/search/users?q=${this.title}`)
+            .then(res => {
+              console.log(res.data.items)
+              this.$bus.$emit('getBookList',res.data.items)
+
+            })
+            .catch(function(error) {
+              alert(error.message);
+              console.log(error.message);
+            });
+
+
       },
       clickSignUpIcon(){
         this.$router.push('/Regist')
@@ -59,27 +76,32 @@
         this.$router.push('/Login')
       },
       exit(){
-        this.$store.dispatch('setUser',null)
+        console.log('111')
+        //this.$store.dispatch('setUser',null)
         this.$router.push('/Login')
 
       }
 
     },
     computed:{
-      mail(){
-       return sessionStorage.getItem('mail')
-      },
 
       IsLogIn(){
-        if(sessionStorage.getItem('mail')&&sessionStorage.getItem('userToken')){
-          this.$store.commit('userStatus',sessionStorage.getItem('mail'))
-        } else {
-          this.$store.commit('userStatus',null)
-        }
-        return this.$store.getters.isLogin
+       if(this.email){
+         return true
+       }else {
+         return false
+       }
 
       }
 
+    },
+    mounted() {
+      this.email=sessionStorage.getItem('email')
+      console.log(this.email=sessionStorage.getItem('email'))
+
+    },
+    beforeDestroy() {
+      this.$bus.$off('getBookList')
     }
   }
 
