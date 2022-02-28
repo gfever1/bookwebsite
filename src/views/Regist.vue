@@ -104,59 +104,36 @@ export default {
       //跳转代码
 		jumptoLogin(){
 
-			if(!/^[A-Za-z0-9\u4e00-\u9fa5]+@[a-zA-Z0-9_-]+(\.com)+$/.test(this.email)){
-				this.msg='你的邮箱真的符合基本法嘛？';
-        alert(this.msg);
-			}
-			else if (!/^[0-9]{11}$/.test(this.tleNum)) {
-				this.msg='不会吧不会有人手机号都不会输把'
-        alert(this.msg);
-			}
-      else if(!/.{9,15}/.test(this.pwd)){
-        alert('嘿咻咻 密码错咯')
-        this.msg='你的长度不对（狗头）'
-        alert(this.msg);
-      }
-      else if(!/^.*[A-Z].*[A-Z].*[A-Z].*$/.test(this.pwd)){
-        alert('嘿咻咻 密码错咯')
-        this.msg='必须得有三人成虎（三个大写字母）'
-        alert(this.msg);
 
-      }
-      else if(/(.)\1/.test(this.pwd)) {
-        alert('嘿咻咻 密码错咯')
-        this.msg='禁止重复'
-        alert(this.msg);
-      }
-			else if(this.pwd!==this.Rigpwd){
-				this.msg='天皇陛下 龟野先生 我的密码 第二次错咯'
-        alert(this.msg);
-			}
-      //  this.$router.push('/Login')
-				const that = this
+      if(this.email&&this.pwd) {
+        const that = this
 
         // eslint-disable-next-line no-mixed-spaces-and-tabs
-			    this.$axios.post("/api/register/"+this.tleNum+'/'+this.email+'/'+this.pwd, {
+        this.$axios.post("/api/register/" + this.tleNum + '/' + this.email + '/' + this.pwd, {
 
-              tleNum: this.tleNum,
-              email: this.email,
-              pwd: this.pwd,
-						
-					})
-						.then(function(dat) {
+          tleNum: this.tleNum,
+          email: this.email,
+          pwd: this.pwd,
+
+        })
+            .then(function (dat) {
               console.log(dat.data)
-							if (dat.data.success==true) {
+              if (dat.data.success == true) {
 
-								alert("Registered successfully");
-							//	that.$router.replace("/Login");
-							}else if(dat.data.success==false){
-								alert("Fail to Register");
-							}
-						})
-						.catch(function(error) {
+                alert("Registered successfully");
+                that.$router.replace("/Login");
+              } else if (dat.data.success == false) {
+                alert("Fail to Register");
+              }
+            })
+            .catch(function (error) {
               alert(error.message);
-							console.log(error.message);
-						});
+              console.log(error.message);
+            });
+      }else {
+        alert('你小子是不是有一行没填？')
+        alert('没填还想注册？')
+      }
 				
 			}
 			

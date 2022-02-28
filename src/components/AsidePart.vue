@@ -1,13 +1,13 @@
 <template>
   <el-aside width="auto"  style="background-color: rgb(238, 241, 246);overflow-y:scroll;height: 85vh">
 
-    <el-menu :default-openeds="['1','2']" >
-      <el-submenu index="1">
+    <el-menu :default-openeds="['5']" >
+      <el-submenu index="1" v-show="!adminState">
         <template slot="title"><i class="el-icon-s-home"></i>主要页面</template>
         <el-menu-item-group>
           <template slot="title">本站页面</template>
           <el-menu-item index="1-1" @click="enterHome">本站首页</el-menu-item>
-          <el-menu-item index="1-2">我的书架</el-menu-item>
+          <el-menu-item index="1-2" @click="enterBookShelf">我的书架</el-menu-item>
         </el-menu-item-group>
         <el-menu-item-group>
           <template slot="title">参考网址</template>
@@ -16,7 +16,7 @@
         </el-menu-item-group>
 
       </el-submenu>
-      <el-submenu index="2">
+      <el-submenu index="2" v-show="!adminState">
         <template slot="title"><i class="el-icon-menu"></i>分类</template>
         <el-menu-item-group >
           <template slot="title">玄幻</template>
@@ -51,7 +51,7 @@
         </el-menu-item-group>
 
       </el-submenu>
-      <el-submenu index="3">
+      <el-submenu index="3" v-show="!adminState">
         <template slot="title"><i class="el-icon-s-data"></i>排行榜</template>
         <el-submenu index="3-1">
           <template slot="title">月票榜</template>
@@ -71,7 +71,7 @@
         </el-submenu>
 
       </el-submenu>
-      <el-submenu index="4">
+      <el-submenu index="4" v-show="!adminState">
         <template slot="title"><i class="el-icon-star-off"></i>大神</template>
         <el-menu-item-group>
           <template slot="title">白金作家</template>
@@ -90,6 +90,16 @@
           <el-menu-item index="5-10">三天两觉</el-menu-item>
         </el-menu-item-group>
       </el-submenu>
+      <el-submenu index="5" v-show="adminState">
+        <template slot="title"><i class="el-icon-s-check"></i>审查</template>
+        <el-menu-item-group>
+          <template slot="title">审查列表</template>
+          <el-menu-item index="5-1" @click="startCkecking">待审查</el-menu-item>
+          <el-menu-item index="5-2" disabled>未通过审查</el-menu-item>
+
+        </el-menu-item-group>
+
+      </el-submenu>
     </el-menu>
   </el-aside>
 </template>
@@ -99,17 +109,29 @@ export default {
   name: "aside",
   data(){
     return{
-      sort:''
+      sort:'',
+      adminState: false,
+      isChecking: false,
 
     }
   },
   methods:{
+    startCkecking(){
+      this.isChecking= true
+      this.$bus.$emit('getisChecking',this.isChecking)
+
+    },
     enterHome(){
+      this.$router.push('/')
       this.$axios.get('/api/books/').then(res=>{
-        console.log(res.data.result)
         this.$bus.$emit('getBook',res.data.result)
 
       })
+    },
+    enterBookShelf(){
+
+      this.$router.push('/BookShelf')
+
     },
     showByXuanhuan(){
       this.$axios.post('/api/books/sort/'+'玄幻',{
@@ -134,7 +156,7 @@ export default {
         sort:'都市'
 
       }).then(res=>{
-        this.$bus.$emit('getBookByWuxia',res.data.result)
+        this.$bus.$emit('getBookByDushi',res.data.result)
 
       })
     },
@@ -165,6 +187,24 @@ export default {
 
       })
     },
+  },
+  mounted() {
+    if(sessionStorage.getItem('email')==='admin'){
+      this.adminState = true
+    }
+
+
+    this.$bus.$on('getIsAdmin',(adminState)=>{
+      this.adminState=adminState;
+    })
+  },
+  beforeDestroy() {
+    this.$bus.$off('getBookByXianxia')
+    this.$bus.$off('getBookByYanqing')
+    this.$bus.$off('getBookByWuxia')
+    this.$bus.$off('getBookByDushi')
+    this.$bus.$off('getBookByQihuan')
+    this.$bus.$off('getBook')
   }
 }
 </script>
