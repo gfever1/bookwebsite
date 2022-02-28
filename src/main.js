@@ -10,8 +10,14 @@ import axios from "axios";
 Vue.use(ElementUI);
 //Vue.prototype.$http = http
 Vue.prototype.$axios = axios
-axios.defaults.headers.post['Content-Type'] = 'multipart/form-data;charset=UTF-8';
+axios.defaults.headers.post['Content-Type'] = 'multipart/form-data; boundary=FormBoundary';
+/*var instance = axios.create({
+  baseURL:'http://bookwebsite.gz2vip.91tunnel.com/bookwebsite_war_exploded/',
+  timeout:1000,
+  headers:{'Content-Type': 'multipart/form-data;charset=UTF-8'}
+})*/
 Vue.config.productionTip = false
+// Vue.prototype.instance=instance
 
 new Vue({
   router,

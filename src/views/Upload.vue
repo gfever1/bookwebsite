@@ -33,6 +33,8 @@
 
 <script>
 import Search from '@/components/search.vue'
+import axios from "axios";
+axios.defaults.headers.post['Content-Type'] = 'multipart/form-data; boundary=FormBoundary';
 export default {
   name: "Upload",
   data() {
@@ -44,7 +46,7 @@ export default {
         sort: '',
         sumIntro: '',
       },
-      file: null
+      file: ''
     }
   },
   components: {
@@ -55,21 +57,33 @@ export default {
       // 获取file
       this.file = e.target.files[0];
 
+
     },
     onSubmit() {
       // 实例化
       let formdata = new FormData()
       formdata.append('file', this.file)
-      console.log(formdata)
-      this.$axios.post('/api/upload',{
+      console.log(this.file)
+      console.log(formdata.get('file'))
+      axios.post('/api/upload',{
         file: formdata
-      }).then(res=>{
+      },{
+         headers:{'Content-Type': 'multipart/form-data;boundary=FormBoundary',},
+        transformRequest:[],
+          }
+      ).then(res=>{
         console.log(res.data)
       },
           error=>{
             console.log(error.message)
 
           })
+/*this.instance.post('/api/upload',formdata).then(
+    function (res){
+        console.log(res.data)
+      }
+)*/
+
     }
   }
 }
