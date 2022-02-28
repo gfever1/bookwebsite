@@ -27,7 +27,8 @@
         </span>
 
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item @click="enterBookShelf">我的书架</el-dropdown-item>
+          <el-dropdown-item @click.native="enterBookShelf">我的书架</el-dropdown-item>
+          <el-dropdown-item @click.native="startUpload">上传书籍</el-dropdown-item>
           <el-dropdown-item @click.native="exit">退出登录</el-dropdown-item>
           <el-dropdown-item @click.native="changeAdmin" v-show="isAdmin&&adminState">退出管理员模式</el-dropdown-item>
           <el-dropdown-item @click.native="changeAdmin" v-show="isAdmin&&!adminState">进入管理员模式</el-dropdown-item>
@@ -98,6 +99,9 @@
         this.$router.push('/BookShelf')
 
       },
+      startUpload(){
+        this.$router.push('/Upload')
+      }
 
     },
     computed:{

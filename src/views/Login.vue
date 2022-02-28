@@ -92,6 +92,8 @@ export default {
 
 
           const that = this
+
+
           this.$axios.post("/api/login/" + this.email + '/' + this.pwd, {
 
             email: this.email,

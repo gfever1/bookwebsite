@@ -12,6 +12,8 @@ module.exports = {
             '/api': {
                 target: 'http://bookwebsite.gz2vip.91tunnel.com/bookwebsite_war_exploded/',
                 changeOrigin: true,
+                secure: false,
+                ws: true,
                 pathRewrite: {
                     '^/api': ''
                 }

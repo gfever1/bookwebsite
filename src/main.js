@@ -10,6 +10,7 @@ import axios from "axios";
 Vue.use(ElementUI);
 //Vue.prototype.$http = http
 Vue.prototype.$axios = axios
+axios.defaults.headers.post['Content-Type'] = 'multipart/form-data;charset=UTF-8';
 Vue.config.productionTip = false
 
 new Vue({

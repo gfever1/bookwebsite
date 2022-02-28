@@ -4,7 +4,7 @@ import Home from '../views/Home.vue'
 import Login from "@/views/Login";
 import Regist from "@/views/Regist";
 import BookShelf from "@/views/BookShelf";
-
+import Upload from "@/views/Upload"
 //全局使用
 Vue.use(VueRouter)
 //配置路由
@@ -34,6 +34,11 @@ const routes = [
     path: '/BookShelf',
     name: 'BookShelf',
     component: BookShelf
+  },
+  {
+    path: '/Upload',
+    name: 'Upload',
+    component: Upload
   }
 
 

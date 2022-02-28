@@ -72,6 +72,7 @@ export default {
   },
   mounted() {
     this.email=sessionStorage.getItem('email')
+
     // console.log(this.email=sessionStorage.getItem('email'))
   },
   beforeDestroy() {

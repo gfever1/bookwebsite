@@ -6,7 +6,7 @@
         <img  :src="scope.row.ptUrl" width="100" height="100"  alt=""/>
       </template>
     </el-table-column>
-    <el-table-column prop="name" label="小说名称" width="100">
+    <el-table-column prop="bookName" label="小说名称" width="100">
     </el-table-column>
     <el-table-column prop="sort" label="小说类型" width="100">
     </el-table-column>
@@ -16,14 +16,16 @@
     </el-table-column>
     <el-table-column v-if="!isChecking">
       <template slot-scope="scope">
-      <el-button type="primary" round style="margin-left: 30px" @click="collect(scope.row.name)">加入书架</el-button>
+      <el-button type="primary" round style="margin-left: 30px" @click="collect(scope.row.bookName)">加入书架</el-button>
       </template>
     </el-table-column>
 
     <el-table-column v-if="!isChecking">
-      <el-link href="../assets/logo.png">
-        <el-button type="primary" round style="margin-left: 25px">下载该书</el-button>
-      </el-link>
+
+        <template slot-scope="scope">
+        <el-button type="primary" round style="margin-left: 25px" @click="download(scope.row.bookName)">下载该书</el-button>
+        </template>
+
 
     </el-table-column>
 
@@ -58,12 +60,13 @@
 </template>
 
 <script>
+
 export default {
   name: "main",
   data() {
     const item = {
       ptUrl: 'http://www.yetianlian.com/files/article/image/20/20281/20281s.jpg',
-      name: '夜的命名术',
+      bookName: '夜的命名术',
       author: '会说话的肘子',
       sumIntro: '蓝与紫的霓虹中，浓密的钢铁苍穹下，' +
           '数据洪流的前端，是科技革命之后的世界，也是现实与虚幻的分界。 ' +
@@ -76,7 +79,9 @@ export default {
       currentPage:1,
       pageSize:4,
 
+      email: '',
       isChecking: false,
+      BookName: 'abc.txt'
     }
   },
   methods: {
@@ -95,7 +100,7 @@ export default {
     collect(bookName){
       let req = confirm('请再次确认您是否需要想在您的书架上添加这本书')
       if (req) {
-        this.$axios.post('/api//shelf/add/' + this.email + '/' + bookName, {
+        this.$axios.post('/api/shelf/add/' + this.email + '/' + bookName, {
           email: this.email,
           bookName: bookName,
         }).then(res => {
@@ -107,9 +112,26 @@ export default {
             }
         )
       }
+    },
+    download(bookName){
+      console.log(this.BookName)
+      let req = confirm('请再次确认您是否选择下载这本书')
+      if (req) {
+        this.$axios.post('/api/download', {
+          fileName: 'abc.txt',
+        }).then(res => {
+              console.log(res.data)
+              alert('下载成功')
+            },
+            error => {
+              console.log(error.message)
+            }
+        )
+      }
     }
   },
   mounted() {
+    this.email=sessionStorage.getItem('email')
 
     this.$bus.$on('getIsAdmin',(isAdmin)=>{
       this.isAdmin=isAdmin;
@@ -117,6 +139,7 @@ export default {
 
     this.$axios.get('/api/books/').then(
         res=> {
+          console.log(res.data)
           this.tableData = res.data.result
         },
       error=>{
