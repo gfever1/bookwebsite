@@ -82,7 +82,7 @@ export default {
         // transformRequest:[],
           }
       ).then(res=>{
-        console.log(res.data)
+          alert(res.data.message)
       },
           error=>{
             console.log(error.message)

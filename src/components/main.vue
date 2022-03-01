@@ -236,6 +236,7 @@ export default {
     })
 
     this.$bus.$on('getHotBook',(books)=>{
+      console.log('getHotBook: ', books)
       this.tableData = books
     })
 

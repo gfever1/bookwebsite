@@ -53,25 +53,20 @@
       </el-submenu>
       <el-submenu index="3" v-show="!adminState">
         <template slot="title"><i class="el-icon-s-data"></i>排行榜</template>
-        <el-submenu index="3-1">
-          <template slot="title" @click="enterHot">月票榜</template>
+          <el-menu-item-group >
+            <el-menu-item @click.native="enterHot">月票榜</el-menu-item>
+            <el-menu-item @click.native="enterHot">推荐榜</el-menu-item>
+          </el-menu-item-group>
 <!--          <el-menu-item index="3-1-1">1.夜的命名术</el-menu-item>
           <el-menu-item index="3-1-2">2.星门</el-menu-item>
           <el-menu-item index="3-1-3">3.明克街13号</el-menu-item>
           <el-menu-item index="3-1-4">4.不科学御兽</el-menu-item>
           <el-menu-item index="3-1-5">5.我就是不按套路出牌</el-menu-item>-->
-        </el-submenu>
-        <el-submenu index="3-2">
-          <template slot="title" @click="enterHot">畅销榜</template>
-<!--          <el-menu-item index="3-2-1">1.夜的命名术</el-menu-item>
-          <el-menu-item index="3-2-2">2.星门</el-menu-item>
-          <el-menu-item index="3-2-3">3.明克街13号</el-menu-item>
-          <el-menu-item index="3-2-4">4.不科学御兽</el-menu-item>
-          <el-menu-item index="3-2-5">5.我就是不按套路出牌</el-menu-item>-->
-        </el-submenu>
+
+
 
       </el-submenu>
-      <el-submenu index="4" v-show="!adminState">
+<!--      <el-submenu index="4" v-show="!adminState">
         <template slot="title"><i class="el-icon-star-off"></i>大神</template>
         <el-menu-item-group>
           <template slot="title">白金作家</template>
@@ -89,7 +84,7 @@
           <el-menu-item index="5-9">烽火戏诸侯</el-menu-item>
           <el-menu-item index="5-10">三天两觉</el-menu-item>
         </el-menu-item-group>
-      </el-submenu>
+      </el-submenu>-->
       <el-submenu index="5" v-show="adminState">
         <template slot="title"><i class="el-icon-s-check"></i>审查</template>
         <el-menu-item-group>
@@ -134,8 +129,9 @@ export default {
     },
     enterHot(){
 
-      this.$axios.get('/api/hot/').then(res=>{
+      this.$axios.get('/api/hot').then(res=>{
         this.$bus.$emit('getHotBook',res.data.result)
+        console.log('11')
 
       })
 
