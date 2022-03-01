@@ -112,7 +112,7 @@ export default {
       rows.splice(index,1)*/
       let req = confirm('请再次确认您是否选择审核不通过这本书')
       if (req) {
-        this.$axios.post('/api/nopass/' + bookName + '/' + author, {
+        this.$axios.post('/api/notpass/' + bookName + '/' + author, {
           bookName: bookName,
           author: author
         }).then(res => {
