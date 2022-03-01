@@ -7,7 +7,7 @@
         <el-menu-item-group>
           <template slot="title">本站页面</template>
           <el-menu-item index="1-1" @click="enterHome">本站首页</el-menu-item>
-          <el-menu-item index="1-2" @click="enterBookShelf">我的书架</el-menu-item>
+<!--          <el-menu-item index="1-2" @click="enterBookShelf" v-show="">我的书架</el-menu-item>-->
         </el-menu-item-group>
         <el-menu-item-group>
           <template slot="title">参考网址</template>
@@ -54,20 +54,20 @@
       <el-submenu index="3" v-show="!adminState">
         <template slot="title"><i class="el-icon-s-data"></i>排行榜</template>
         <el-submenu index="3-1">
-          <template slot="title">月票榜</template>
-          <el-menu-item index="3-1-1">1.夜的命名术</el-menu-item>
+          <template slot="title" @click="enterHot">月票榜</template>
+<!--          <el-menu-item index="3-1-1">1.夜的命名术</el-menu-item>
           <el-menu-item index="3-1-2">2.星门</el-menu-item>
           <el-menu-item index="3-1-3">3.明克街13号</el-menu-item>
           <el-menu-item index="3-1-4">4.不科学御兽</el-menu-item>
-          <el-menu-item index="3-1-5">5.我就是不按套路出牌</el-menu-item>
+          <el-menu-item index="3-1-5">5.我就是不按套路出牌</el-menu-item>-->
         </el-submenu>
         <el-submenu index="3-2">
-          <template slot="title">畅销榜</template>
-          <el-menu-item index="3-2-1">1.夜的命名术</el-menu-item>
+          <template slot="title" @click="enterHot">畅销榜</template>
+<!--          <el-menu-item index="3-2-1">1.夜的命名术</el-menu-item>
           <el-menu-item index="3-2-2">2.星门</el-menu-item>
           <el-menu-item index="3-2-3">3.明克街13号</el-menu-item>
           <el-menu-item index="3-2-4">4.不科学御兽</el-menu-item>
-          <el-menu-item index="3-2-5">5.我就是不按套路出牌</el-menu-item>
+          <el-menu-item index="3-2-5">5.我就是不按套路出牌</el-menu-item>-->
         </el-submenu>
 
       </el-submenu>
@@ -94,7 +94,7 @@
         <template slot="title"><i class="el-icon-s-check"></i>审查</template>
         <el-menu-item-group>
           <template slot="title">审查列表</template>
-          <el-menu-item index="5-1" @click="startCkecking">待审查</el-menu-item>
+          <el-menu-item index="5-1" @click="startChecking">待审查</el-menu-item>
           <el-menu-item index="5-2" disabled>未通过审查</el-menu-item>
 
         </el-menu-item-group>
@@ -116,9 +116,13 @@ export default {
     }
   },
   methods:{
-    startCkecking(){
+    startChecking(){
       this.isChecking= true
       this.$bus.$emit('getisChecking',this.isChecking)
+
+      this.$axios.get('/api/checkbook').then(res => {
+        this.$bus.$emit('getCheckBook',res.data.result)
+      })
 
     },
     enterHome(){
@@ -128,11 +132,15 @@ export default {
 
       })
     },
-    enterBookShelf(){
+    enterHot(){
 
-      this.$router.push('/BookShelf')
+      this.$axios.get('/api/hot/').then(res=>{
+        this.$bus.$emit('getHotBook',res.data.result)
+
+      })
 
     },
+
     showByXuanhuan(){
       this.$axios.post('/api/books/sort/'+'玄幻',{
         sort:'玄幻'

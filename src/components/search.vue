@@ -4,7 +4,7 @@
     <el-col :span="8" @click.native="enterHome"> <img src="https://rcode.zongheng.com/v2018/images/logo.png" width="167px" height="32px" style="margin-left: 30px;cursor: pointer">
     </el-col>
     <el-col :span="6" >
-      <input type="text" name="keyword" class="" placeholder="请输入你想搜索的书名" v-model="title">
+      <input type="text" name="keyword" class="" placeholder="请输入你想搜索的书名或作者" v-model="title">
     </el-col>
     <el-col :span="4" :push="1">
       <input type="submit" class="searchForm_btn" value="" @click="search" >
@@ -27,7 +27,7 @@
         </span>
 
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item @click.native="enterBookShelf">我的书架</el-dropdown-item>
+          <el-dropdown-item @click.native="enterBookShelf" v-show="!isAdmin">我的书架</el-dropdown-item>
           <el-dropdown-item @click.native="startUpload">上传书籍</el-dropdown-item>
           <el-dropdown-item @click.native="exit">退出登录</el-dropdown-item>
           <el-dropdown-item @click.native="changeAdmin" v-show="isAdmin&&adminState">退出管理员模式</el-dropdown-item>
@@ -57,10 +57,10 @@
         this.$bus.$emit('getBookList',dat.data.items)*/
 
         //js模板字符串，可以带参数
-        this.$axios.get(`https://api.github.com/search/users?q=${this.title}`)
+        this.$axios.get(`/api/search/`+this.title,)
             .then(res => {
-              console.log(res.data.items)
-              this.$bus.$emit('getBookList',res.data.items)
+              console.log(res.data.result)
+              this.$bus.$emit('getBookList',res.data.result)
 
             })
             .catch(function(error) {
@@ -94,8 +94,7 @@
         this.$bus.$emit('getIsAdmin',this.adminState)
       },
       enterBookShelf(){
-       /* this.isBookShelf= true
-        this.$bus.$emit('getIsBookShelf',this.isBookShelf)*/
+
         this.$router.push('/BookShelf')
 
       },

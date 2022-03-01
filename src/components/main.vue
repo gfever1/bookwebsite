@@ -16,14 +16,14 @@
     </el-table-column>
     <el-table-column v-if="!isChecking">
       <template slot-scope="scope">
-      <el-button type="primary" round style="margin-left: 30px" @click="collect(scope.row.bookName)">加入书架</el-button>
+      <el-button type="primary" round style="margin-left: 30px" @click="collect(scope.row.bookName,scope.row.author)">加入书架</el-button>
       </template>
     </el-table-column>
 
     <el-table-column v-if="!isChecking">
 
         <template slot-scope="scope">
-        <el-button type="primary" round style="margin-left: 25px" @click="download(scope.row.bookName)">下载该书</el-button>
+        <el-button type="primary" round style="margin-left: 25px" @click="download(scope.row.bookName,scope.row.author)">下载该书</el-button>
         </template>
 
 
@@ -31,12 +31,12 @@
 
     <el-table-column v-if="isChecking">
       <template slot-scope="scope">
-        <el-button type="success" round style="margin-left: 30px" @click="pass(scope.$index,tableData)">通过审核</el-button>
+        <el-button type="success" round style="margin-left: 30px" @click="pass(scope.row.bookName,scope.row.author)">通过审核</el-button>
       </template>
     </el-table-column>
     <el-table-column v-if="isChecking">
       <template slot-scope="scope">
-        <el-button type="danger" round style="margin-left: 15px" @click="noPass(scope.$index,tableData)">不通过审核</el-button>
+        <el-button type="danger" round style="margin-left: 15px" @click="noPass(scope.row.bookName,scope.row.author)">不通过审核</el-button>
       </template>
     </el-table-column>
   </el-table>
@@ -89,23 +89,17 @@ export default {
       this.currentPage = val;
       console.log(`当前页: ${val}`);
     },
-    pass(index,rows){
-      console.log('通过')
-      rows.splice(index,1)
-    },
-    noPass(index,rows){
-      console.log('未通过')
-      rows.splice(index,1)
-    },
-    collect(bookName){
-      let req = confirm('请再次确认您是否需要想在您的书架上添加这本书')
+    pass(bookName,author){
+     /* console.log('通过')
+      rows.splice(index,1)*/
+      let req = confirm('请再次确认您是否选择审核通过这本书')
       if (req) {
-        this.$axios.post('/api/shelf/add/' + this.email + '/' + bookName, {
-          email: this.email,
+        this.$axios.post('/api/pass/' + bookName + '/' + author, {
           bookName: bookName,
+          author: author
         }).then(res => {
               console.log(res.data)
-              alert('添加成功')
+              alert(res.data.message)
             },
             error => {
               console.log(error.message)
@@ -113,14 +107,64 @@ export default {
         )
       }
     },
-    download(bookName){
-      console.log(this.BookName)
-      let req = confirm('请再次确认您是否选择下载这本书')
+    noPass(bookName,author){
+     /* console.log('未通过')
+      rows.splice(index,1)*/
+      let req = confirm('请再次确认您是否选择审核不通过这本书')
       if (req) {
-        this.$axios.post('/api/download', {
-          fileName: 'abc.txt',
+        this.$axios.post('/api/nopass/' + bookName + '/' + author, {
+          bookName: bookName,
+          author: author
         }).then(res => {
               console.log(res.data)
+              alert(res.data.message)
+            },
+            error => {
+              console.log(error.message)
+            }
+        )
+      }
+    },
+    collect(bookName,author){
+      let req = confirm('请再次确认您是否需要想在您的书架上添加这本书')
+      if (req) {
+        this.$axios.post('/api/shelf/add/' + this.email + '/' + bookName + '/' + author, {
+          email: this.email,
+          bookName: bookName,
+          author: author
+        }).then(res => {
+              console.log(res.data)
+              alert(res.data.message)
+            },
+            error => {
+              console.log(error.message)
+            }
+        )
+      }
+    },
+    download(bookName,author){
+      let formData = new FormData()
+      formData.append('bookName',bookName)
+      formData.append('author',author)
+      let req = confirm('请再次确认您是否选择下载这本书')
+      if (req) {
+        this.$axios.post('/api/download',formData,{
+          responseType:'blob',
+        } ).then(res => {
+              let blob = new Blob([res.data], /*{ type: res.type }*/
+              );
+              // 获取文件名
+              let filename = res.headers['content-disposition'];
+              filename = decodeURIComponent(filename.split("filename=")[1]);
+              // 创建 a标签 执行下载
+              let downloadElement = document.createElement('a');
+              let href = window.URL.createObjectURL(blob); //创建下载的链接
+              downloadElement.href = href;
+              downloadElement.download = filename; //下载后文件名
+              document.body.appendChild(downloadElement); // 项目插入a元素
+              downloadElement.click(); //点击下载
+              document.body.removeChild(downloadElement); //下载完成移除元素
+              window.URL.revokeObjectURL(href); //释放blob对象
               alert('下载成功')
             },
             error => {
@@ -131,71 +175,82 @@ export default {
     }
   },
   mounted() {
-    this.email=sessionStorage.getItem('email')
+    this.email = sessionStorage.getItem('email')
 
-    this.$bus.$on('getIsAdmin',(isAdmin)=>{
-      this.isAdmin=isAdmin;
+    this.$bus.$on('getIsAdmin', (isAdmin) => {
+      this.isAdmin = isAdmin;
     })
 
     this.$axios.get('/api/books/').then(
-        res=> {
+        res => {
           console.log(res.data)
           this.tableData = res.data.result
         },
-      error=>{
-        console.log(error.message)
+        error => {
+          console.log(error.message)
 
-      }
-
+        }
     )
 
-    this.$bus.$on('getBookList',(books)=>{
-      console.log('getBookList: ',books)
-      this.tableData =books
+    this.$bus.$on('getBookList', (books) => {
+      console.log('getBookList: ', books)
+      this.tableData = books
     })
 
-    this.$bus.$on('getBook',(books)=>{
-      console.log('getBook: ',books)
-      this.tableData =books
+    this.$bus.$on('getBook', (books) => {
+      console.log('getBook: ', books)
+      this.tableData = books
     })
 
-    this.$bus.$on('getBook1',(books)=>{
-      console.log('getBook1: ',books)
-      this.tableData =books
+    this.$bus.$on('getBook1', (books) => {
+      console.log('getBook1: ', books)
+      this.tableData = books
     })
 
-    this.$bus.$on('getBookByXuanhuan',(books)=>{
-      console.log('getBookByXuanhuan: ',books)
-      this.tableData =books
+    this.$bus.$on('getBookByXuanhuan', (books) => {
+      console.log('getBookByXuanhuan: ', books)
+      this.tableData = books
     })
 
-    this.$bus.$on('getBookByQihuan',(books)=>{
-      console.log('getBookByQihuan: ',books)
-      this.tableData =books
+    this.$bus.$on('getBookByQihuan', (books) => {
+      console.log('getBookByQihuan: ', books)
+      this.tableData = books
     })
 
-    this.$bus.$on('getBookByWuxia',(books)=>{
-      console.log('getBookByWuxia: ',books)
-      this.tableData =books
+    this.$bus.$on('getBookByWuxia', (books) => {
+      console.log('getBookByWuxia: ', books)
+      this.tableData = books
     })
 
-    this.$bus.$on('getBookByYanqing',(books)=>{
+    this.$bus.$on('getBookByYanqing', (books) => {
       // console.log('getBookByYanqing: ',books)
-      this.tableData =books
+      this.tableData = books
     })
 
-    this.$bus.$on('getBookByDushi',(books)=>{
-      this.tableData =books
+    this.$bus.$on('getBookByDushi', (books) => {
+      this.tableData = books
     })
 
-    this.$bus.$on('getBookByXianxia',(books)=>{
-      this.tableData =books
+    this.$bus.$on('getBookByXianxia', (books) => {
+      this.tableData = books
     })
 
-    this.$bus.$on('getisChecking',(isChecking)=>{
-      this.isChecking =isChecking
+    this.$bus.$on('getHotBook',(books)=>{
+      this.tableData = books
+    })
+
+    this.$bus.$on('getisChecking', (isChecking) => {
+      this.isChecking = isChecking
 
     })
+
+    this.$bus.$on('getCheckBook',(getCheckBook)=>{
+      this.tableData = getCheckBook
+    })
+
+
+
+
   },
   computed:{
     currentTotal(){

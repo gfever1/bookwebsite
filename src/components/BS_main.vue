@@ -16,13 +16,13 @@
       </el-table-column>
       <el-table-column >
         <template slot-scope="scope">
-        <el-button type="danger" round style="margin-left: 30px" @click="remove(scope.row.name)">不再收藏</el-button>
+        <el-button type="danger" round style="margin-left: 30px" @click="remove(scope.row.bookName,scope.row.author)">不再收藏</el-button>
           </template>
       </el-table-column>
       <el-table-column>
-        <el-link href="../assets/logo.png">
-          <el-button type="primary" round style="margin-left: 25px">下载该书</el-button>
-        </el-link>
+        <template slot-scope="scope">
+          <el-button type="primary" round style="margin-left: 25px" @click="download(scope.row.bookName,scope.row.author)">下载该书</el-button>
+        </template>
       </el-table-column>
 
 
@@ -79,16 +79,48 @@ export default {
       this.currentPage = val;
       console.log(`当前页: ${val}`);
     },
-    remove(bookName) {
+    remove(bookName,author) {
       let req = confirm('请再次确认您是否需要从书架上移除这本书')
       if (req) {
-        this.$axios.post('/api//shelf/delete/' + this.email + '/' + bookName, {
+        this.$axios.post('/api/shelf/delete/' + this.email + '/' + bookName + '/' + author, {
           email: this.email,
           bookName: bookName,
+          author: author
         }).then(res => {
               console.log(res.data)
 
-              alert('移除成功')
+              alert(res.data.message)
+            },
+            error => {
+              console.log(error.message)
+            }
+        )
+      }
+    },
+    download(bookName,author){
+      let formData = new FormData()
+      formData.append('bookName',bookName)
+      formData.append('author',author)
+      let req = confirm('请再次确认您是否选择下载这本书')
+      if (req) {
+        this.$axios.post('/api/download',formData,{
+          responseType:'blob',
+        } ).then(res => {
+              let blob = new Blob([res.data], /*{ type: res.type }*/
+              );
+              // 获取文件名
+              let filename = res.headers['content-disposition'];
+              filename = decodeURIComponent(filename.split("filename=")[1]);
+              // 创建 a标签 执行下载
+              let downloadElement = document.createElement('a');
+              let href = window.URL.createObjectURL(blob); //创建下载的链接
+              downloadElement.href = href;
+              downloadElement.download = filename; //下载后文件名
+              document.body.appendChild(downloadElement); // 项目插入a元素
+              downloadElement.click(); //点击下载
+              document.body.removeChild(downloadElement); //下载完成移除元素
+              window.URL.revokeObjectURL(href); //释放blob对象
+              alert('下载成功')
             },
             error => {
               console.log(error.message)

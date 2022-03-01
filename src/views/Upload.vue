@@ -17,7 +17,7 @@
     <el-form-item label="小说简介">
       <el-input type="textarea" v-model="bookInfo.sumIntro"></el-input>
     </el-form-item>
-    <el-form-item label="请选择txt文件">
+    <el-form-item label="请选择txt、word或pdf文件">
       <input type="file" name="txt" id='txt' @change="upload($event)">
     </el-form-item>
     <el-form-item>
@@ -64,44 +64,19 @@ export default {
     upload(e){
       // 获取file
       this.bookInfo.txt = e.target.files[0];
-      // 实例化
-     /* let formdata = new FormData()
-      formdata.append('name',this.bookInfo.name)
-      formdata.append('author',this.bookInfo.author)
-      formdata.append('sort',this.bookInfo.sort)
-      formdata.append('intro',this.bookInfo.sumIntro)
-      formdata.append('file', this.file)
-
-      axios.post('/api/upload',{
-            file: formdata
-          },{
-            headers:{'Content-Type': 'multipart/form-data;boundary=FormBoundary',},
-            //headers:{'Content-Type': 'multipart/form-data',},
-            // transformRequest:[],
-          }
-      ).then(res=>{
-            console.log(res.data)
-          },
-          error=>{
-            console.log(error.message)
-
-          })*/
-
 
     },
     onSubmit() {
       // 实例化
-      let file = new FormData()
-      file.append('name',this.bookInfo.name)
-      file.append('author',this.bookInfo.author)
-      file.append('sort',this.bookInfo.sort)
-      file.append('intro',this.bookInfo.sumIntro)
-      file.append('txt', this.bookInfo.txt)
+      let formData = new FormData()
+      formData.append('name',this.bookInfo.name)
+      formData.append('author',this.bookInfo.author)
+      formData.append('sort',this.bookInfo.sort)
+      formData.append('intro',this.bookInfo.sumIntro)
+      formData.append('file', this.bookInfo.txt)
       //file.append("file", document.getElementById("txt").files[0]);
 
-      axios.post('/api/upload',{
-        file: file
-      },{
+      axios.post('/api/upload', formData,{
          headers:{'Content-Type': 'multipart/form-data;boundary=FormBoundary',},
         //headers:{'Content-Type': 'multipart/form-data',},
         // transformRequest:[],
