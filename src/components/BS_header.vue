@@ -18,7 +18,7 @@
         </span>
 
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item @click="enterHome">回到首页</el-dropdown-item>
+            <el-dropdown-item @click.native="enterHome">回到首页</el-dropdown-item>
             <el-dropdown-item @click.native="exit">退出登录</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
@@ -56,9 +56,9 @@ export default {
 
     },
     enterHome(){
-      this.$router.push('/')
+      this.$router.push('/Home')
       this.$axios.get('/api/books/').then(res=>{
-        this.$bus.$emit('getBook',res.data.result)
+        this.$bus.$emit('getBook1',res.data.result)
 
       })
     },

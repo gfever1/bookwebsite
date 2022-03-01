@@ -159,6 +159,11 @@ export default {
       this.tableData =books
     })
 
+    this.$bus.$on('getBook1',(books)=>{
+      console.log('getBook1: ',books)
+      this.tableData =books
+    })
+
     this.$bus.$on('getBookByXuanhuan',(books)=>{
       console.log('getBookByXuanhuan: ',books)
       this.tableData =books
